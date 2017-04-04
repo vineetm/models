@@ -20,25 +20,41 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+import cPickle as pkl
 import os
 
 import tensorflow as tf
+from collections import defaultdict, Counter
+logging = tf.logging
+logging.set_verbosity(logging.INFO)
 
+UNK_WORD = 'UNK'
+EOS_WORD = 'EOS'
 
 def _read_words(filename):
   with tf.gfile.GFile(filename, "r") as f:
-    return f.read().decode("utf-8").replace("\n", "<eos>").split()
+    return f.read().decode("utf-8").replace("\n", ' %s '%EOS_WORD).split()
 
-
-def _build_vocab(filename):
+'''
+Returns 0 for OOV word
+Returns 1 for EOS (end of sentence)
+'''
+def _build_vocab(filename, max_vocab):
   data = _read_words(filename)
 
-  counter = collections.Counter(data)
-  count_pairs = sorted(counter.items(), key=lambda x: (-x[1], x[0]))
+  counter = Counter(data)
+  # count_pairs = sorted(counter.items(), key=lambda x: (-x[1], x[0]))
+  #
+  # words, _ = list(zip(*count_pairs))
+  # word_to_id = dict(zip(words, range(len(words))))
+  word_to_id = defaultdict(int)
+  word_to_id[EOS_WORD] = 1
 
-  words, _ = list(zip(*count_pairs))
-  word_to_id = dict(zip(words, range(len(words))))
+  for word, _ in counter.most_common(max_vocab):
+    if word == EOS_WORD:
+      continue
 
+    word_to_id[word] = len(word_to_id) + 1
   return word_to_id
 
 
@@ -47,7 +63,7 @@ def _file_to_word_ids(filename, word_to_id):
   return [word_to_id[word] for word in data if word in word_to_id]
 
 
-def ptb_raw_data(data_path=None):
+def ptb_raw_data(data_path=None, max_vocab=10000):
   """Load PTB raw data from data directory "data_path".
 
   Reads PTB text files, converts strings to integer ids,
@@ -70,7 +86,12 @@ def ptb_raw_data(data_path=None):
   valid_path = os.path.join(data_path, "ptb.valid.txt")
   test_path = os.path.join(data_path, "ptb.test.txt")
 
-  word_to_id = _build_vocab(train_path)
+  word_to_id = _build_vocab(train_path, max_vocab)
+  vocab_file = os.path.join(data_path, 'vocab-%d.pkl'%max_vocab)
+  with open(vocab_file, 'w') as f:
+    pkl.dump(word_to_id, f)
+    logging.info('Saved vocab to %s'%vocab_file)
+
   train_data = _file_to_word_ids(train_path, word_to_id)
   valid_data = _file_to_word_ids(valid_path, word_to_id)
   test_data = _file_to_word_ids(test_path, word_to_id)
