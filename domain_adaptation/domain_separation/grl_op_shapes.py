@@ -1,4 +1,4 @@
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2016 The TensorFlow Authors All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +13,4 @@
 # limitations under the License.
 # ==============================================================================
 
-"""Makes helper libraries available in the translate package."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-from . import data_utils
-from . import seq2seq_model
+"""Shape inference for operators defined in grl_ops.cc."""

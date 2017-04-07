@@ -1,4 +1,4 @@
-# Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+# Copyright 2017 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,11 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
-"""Makes helper libraries available in the translate package."""
+"""GradientReversal op Python library."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from . import data_utils
-from . import seq2seq_model
+import os.path
+
+import tensorflow as tf
+
+tf.logging.info(tf.resource_loader.get_data_files_path())
+_grl_ops_module = tf.load_op_library(
+    os.path.join(tf.resource_loader.get_data_files_path(),
+                 '_grl_ops.so'))
+gradient_reversal = _grl_ops_module.gradient_reversal

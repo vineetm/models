@@ -14,6 +14,7 @@ running TensorFlow 0.12 or earlier, please
 - [autoencoder](autoencoder): various autoencoders.
 - [compression](compression): compressing and decompressing images using a pre-trained Residual GRU network.
 - [differential_privacy](differential_privacy): privacy-preserving student models from multiple teachers.
+- [domain_adaptation](domain_adaptation): domain separation networks.
 - [im2txt](im2txt): image-to-text neural network for image captioning.
 - [inception](inception): deep convolutional networks for computer vision.
 - [learning_to_remember_rare_events](learning_to_remember_rare_events):  a large-scale life-long memory module for use in deep learning.
